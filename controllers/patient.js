@@ -8,7 +8,7 @@ export const patientList = (req, res) =>{
 
     //     return res.status(200).json((data))
     // })
-    console.log("Patients list here")
+    return res.status(200).json(("Patients list here"))
 }
 
 export const getPatient = (req, res)=>{
