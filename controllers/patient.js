@@ -4,7 +4,7 @@ export const patientList = (req, res) =>{
     const query = "SELECT * FROM patient";
 
     db.query(query, (err, data)=>{
-        if(err) return res.status(500).json("Internal server error");
+        if(err) return res.status(500).json(err);
 
         return res.status(200).json((data))
     })
