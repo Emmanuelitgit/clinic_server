@@ -14,7 +14,10 @@ import { Server } from "socket.io";
 import db from "./db.js";
 import http from "http";
 import multer from "multer";
+import dotenv from "dotenv";
 
+// Load environment variables from .env file
+dotenv.config();
 
 
 const server = http.createServer(app);
@@ -95,6 +98,7 @@ app.post('/messages', (req, res) => {
     });
 });
 
-server.listen(5000, () => {
-    console.log("App is running on port 5000");
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+    console.log(`App is running on port ${PORT}`);
 });
