@@ -1,13 +1,14 @@
 import db from "../db.js";
 
 export const patientList = (req, res) =>{
-    const query = "SELECT * FROM patient";
+    // const query = "SELECT * FROM patient";
 
-    db.query(query, (err, data)=>{
-        if(err) return res.status(500).json(err);
+    // db.query(query, (err, data)=>{
+    //     if(err) return res.status(500).json(err);
 
-        return res.status(200).json((data))
-    })
+    //     return res.status(200).json((data))
+    // })
+    console.log("Patients list here")
 }
 
 export const getPatient = (req, res)=>{
