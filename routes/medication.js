@@ -17,31 +17,32 @@ import {
         updateMedicineCategory, 
         updatePrescription, 
         updateStatus} from "../controllers/medication.js";
-        
+ import { authenticateToken } from "../middleware/authToken.js";
+
 
 const router = express.Router()
 
-router.get("/prescriptions", getPrescriptions);
-router.get("/prescriptions/count", getPrescriptionsCountForDashBox);
-router.get("/prescription/:id", getPrescription);
-router.post("/add_prescription", addPrescription);
-router.put("/update_prescription/:id", updatePrescription);
-router.put("/update_medication_status/:id", updateStatus);
-router.delete("/remove_prescription/:id", removePrescription);
+router.get("/prescriptions", authenticateToken, getPrescriptions);
+router.get("/prescriptions/count", authenticateToken, getPrescriptionsCountForDashBox);
+router.get("/prescription/:id", authenticateToken, getPrescription);
+router.post("/add_prescription", authenticateToken, addPrescription);
+router.put("/update_prescription/:id", authenticateToken, updatePrescription);
+router.put("/update_medication_status/:id", authenticateToken, updateStatus);
+router.delete("/remove_prescription/:id", authenticateToken, removePrescription);
 
 
 // MEDICINE CATEGORY ROUTES HERE
-router.get("/medicine_categories", getMedicineCategories);
-router.get("/medicine_category/:id", getMedicineCategory);
-router.post("/add_category", addMedicineCategory);
-router.put("/update_category/:id", updateMedicineCategory);
-router.delete("/remove_category/:id", removeMedicineCategory);
+router.get("/medicine_categories", authenticateToken, getMedicineCategories);
+router.get("/medicine_category/:id", authenticateToken, getMedicineCategory);
+router.post("/add_category", authenticateToken, addMedicineCategory);
+router.put("/update_category/:id", authenticateToken, updateMedicineCategory);
+router.delete("/remove_category/:id", authenticateToken, removeMedicineCategory);
 
 // MEDICINE ROUTES HERE
-router.get("/medicine_list", getMedicineList);
-router.get("/medicine/:id", getMedicine);
-router.post("/add_medicine", addMedicine);
-router.put("/update_medicine/:id", updateMedicine);
-router.delete("/remove_medicine/:id", removeMedicine);
+router.get("/medicine_list", authenticateToken, getMedicineList);
+router.get("/medicine/:id", authenticateToken, getMedicine);
+router.post("/add_medicine", authenticateToken, addMedicine);
+router.put("/update_medicine/:id", authenticateToken, updateMedicine);
+router.delete("/remove_medicine/:id", authenticateToken, removeMedicine);
 
 export default router;

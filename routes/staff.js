@@ -10,21 +10,22 @@ import { getDepartment,
          getAllStaff, 
          getStaffList, 
          getStaff} from "../controllers/staff.js";
+import { authenticateToken } from "../middleware/authToken.js";
 
 const router = express.Router();
 
-router.get("/staff/:role", getStaffList);
-router.get("/single_staff/:id", getStaff);
-router.get("/all_staff", getAllStaff);
-router.put("/update_staff/:id", updateStaff);
-router.post("/add_staff", addStaff);
-router.delete("/remove_staff/:id", removeStaff);
+router.get("/staff/:role", authenticateToken, getStaffList);
+router.get("/single_staff/:id", authenticateToken, getStaff);
+router.get("/all_staff", authenticateToken, getAllStaff);
+router.put("/update_staff/:id", authenticateToken, updateStaff);
+router.post("/add_staff", authenticateToken, addStaff);
+router.delete("/remove_staff/:id", authenticateToken, removeStaff);
 
 // DEPARTMENT ROUTE HERE
-router.get("/departments", getDepartmentList);
-router.get("/department/:id", getDepartment);
-router.post("/add_department", addDepartment);
-router.put("/update_department/:id", updateDepartment);
-router.delete("/remove_department/:id", removeDepartment);
+router.get("/departments", authenticateToken, getDepartmentList);
+router.get("/department/:id", authenticateToken, getDepartment);
+router.post("/add_department", authenticateToken, addDepartment);
+router.put("/update_department/:id", authenticateToken, updateDepartment);
+router.delete("/remove_department/:id", authenticateToken, removeDepartment);
 
 export default router; 

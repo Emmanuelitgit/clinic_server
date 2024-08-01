@@ -9,55 +9,46 @@ import medicationRoute from "./routes/medication.js";
 import requestRoute from "./routes/labs.js";
 import invoiceRoute from "./routes/payment.js";
 import settingRoute from "./routes/setting.js";
-import app from "./middleware/middleware.js"
+import app from "./middleware/middleware.js";
 import { Server } from "socket.io";
 import db from "./db.js";
 import http from "http";
 import multer from "multer";
 import dotenv from "dotenv";
+import { authenticateToken } from "./middleware/authToken.js";
+import jwt from "jsonwebtoken";
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import express from 'express';
+import bodyParser from 'body-parser';
 
 // Load environment variables from .env file
 dotenv.config();
-
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
         origin: 'http://localhost:3000',
-        methods: ["GET", "POST"]
+        methods: ["GET", "POST", "DELETE"]
     }
 });
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb){
-      cb(null, '../client/public/uploads')
+    destination: function (req, file, cb) {
+        cb(null, '../client/public/uploads');
     },
-    filename: function(req, file, cb){
-      cb(null, Date.now()+file?.originalname)
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + file?.originalname);
     }
-  })
-  
-  const upload = multer({storage})
-  
-  app.post("/upload", upload.single('file'), function(req, res){
-    const file = req.file
-    res.status(200).json(file?.filename)
-  });
+});
 
+const upload = multer({ storage });
 
-// ROUTES DEFINITIONS
-app.use("/", authRoute);
-app.use("/", staffRoute);
-app.use("/", patientAuth);
-app.use("/", appointmentRoute);
-app.use("/", bedRoute);
-app.use("/", bloodBankRoute);
-app.use("/", reportRoute);
-app.use("/", medicationRoute);
-app.use("/", requestRoute);
-app.use("/", invoiceRoute);
-app.use("/", settingRoute);
+app.post("/upload", upload.single('file'), function (req, res) {
+    const file = req.file;
+    res.status(200).json(file?.filename);
+});
 
 io.on('connection', (socket) => {
     console.log('A user connected', socket.id);
@@ -84,7 +75,6 @@ io.on('connection', (socket) => {
     });
 });
 
-
 app.post('/messages', (req, res) => {
     const { sender, receiver } = req.body;
     const query = 'SELECT * FROM messages WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)';
@@ -97,6 +87,19 @@ app.post('/messages', (req, res) => {
         res.json(results);
     });
 });
+
+
+app.use("/", authRoute);
+app.use("/", staffRoute);
+app.use("/", patientAuth);
+app.use("/", appointmentRoute);
+app.use("/", bedRoute);
+app.use("/", bloodBankRoute);
+app.use("/", reportRoute);
+app.use("/", medicationRoute);
+app.use("/", requestRoute);
+app.use("/", invoiceRoute);
+app.use("/", settingRoute);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
