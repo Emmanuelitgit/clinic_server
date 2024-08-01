@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 app.use(cookieParser());
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: 'https://clinic-server-o79p.onrender.com',
     credentials: true,
 }));
 app.use(express.json());
