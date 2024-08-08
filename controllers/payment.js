@@ -64,15 +64,32 @@ export const addInvoice = async (req, res) => {
         req.body.date,
         req.body.status,
         req.body.transaction_id,
-        req.body.description
+        req.body.description,
     ];
+     
+    const {email, amount} = req.body;
+
     const query = "INSERT INTO invoice(`title`, `amount`, `patient_id`, `accountant_id`, `date`, `status`, `transaction_id`, `description`) VALUES(?)";
- let connection;
+     let connection;
     try {
         connection = await db.getConnection();
-        await db.query(query, [values]);
-        res.status(201).json('Invoice added');
+        const response = await axios.post('https://api.paystack.co/transaction/initialize', {
+            email,
+            amount: amount * 100, 
+        }, {
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if(response.status === 200){
+            await db.query(query, [values]);
+            res.status(201).json(response.data);
+        }
+
     } catch (err) {
+        console.log(err)
         res.status(500).json("Internal server error");
     }finally{
         if(connection) connection.release()
