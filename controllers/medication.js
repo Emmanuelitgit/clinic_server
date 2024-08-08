@@ -25,12 +25,15 @@ export const getPrescriptions = async (req, res) => {
         LEFT JOIN ${db_name}.invoice
             ON ${db_name}.prescription.patient_id = ${db_name}.invoice.patient_id
     `;
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -53,12 +56,15 @@ export const getPrescriptionsCountForDashBox = async (req, res) => {
             ON ${db_name}.prescription.patient_id = ${db_name}.invoice.patient_id
         WHERE ${db_name}.prescription.status = 'Item Taken'
     `;
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -81,12 +87,15 @@ export const getPrescription = async (req, res) => {
             ON ${db_name}.prescription.patient_id = ${db_name}.invoice.patient_id
         WHERE ${db_name}.prescription.patient_id = ?
     `;
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.id]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -99,12 +108,15 @@ export const addPrescription = async (req, res) => {
         req.body.date
     ];
     const query = "INSERT INTO prescription(`patient_id`, `doctor_id`, `medication`, `description`, `date`) VALUES(?)";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [values]);
         res.status(201).json('Prescription added');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -118,12 +130,15 @@ export const updatePrescription = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE prescription SET patient_id=?, doctor_id=?, medication=?, description=?, date=?  WHERE prescription_id=?";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Prescription updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -133,24 +148,30 @@ export const updateStatus = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE prescription SET status=? WHERE prescription_id=?";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Status updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
 export const removePrescription = async (req, res) => {
     const query = "DELETE FROM prescription WHERE prescription_id = ?";
     const prescription_bankId = req.params.id;
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [prescription_bankId]);
         res.status(200).json('Prescription removed');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -158,23 +179,29 @@ export const removePrescription = async (req, res) => {
 
 export const getMedicineCategories = async (req, res) => {
     const query = "SELECT * FROM medicine_category";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
 export const getMedicineCategory = async (req, res) => {
     const query = "SELECT * FROM medicine_category WHERE category_id=?";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.id]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -184,12 +211,15 @@ export const addMedicineCategory = async (req, res) => {
         req.body.description
     ];
     const query = "INSERT INTO medicine_category(`category_name`, `description`) VALUES(?)";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [values]);
         res.status(201).json('Category added');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -200,47 +230,59 @@ export const updateMedicineCategory = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE medicine_category SET category_name=?, description=? WHERE category_id=?";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Category updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
 export const removeMedicineCategory = async (req, res) => {
     const query = "DELETE FROM medicine_category WHERE category_id = ?";
     const category_id = req.params.id;
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [category_id]);
         res.status(200).json('Category removed');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
 // MEDICINE BACKEND CODE HERE
 export const getMedicineList = async (req, res) => {
     const query = "SELECT * FROM medicine";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
 export const getMedicine = async (req, res) => {
     const query = "SELECT * FROM medicine WHERE medicine_id=?";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.id]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -254,12 +296,15 @@ export const addMedicine = async (req, res) => {
         req.body.status
     ];
     const query = "INSERT INTO medicine(`name`, `category`, `description`, `price`, `manufacturer`, `status`) VALUES(?)";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [values]);
         res.status(201).json('Medicine added');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -274,24 +319,30 @@ export const updateMedicine = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE medicine SET name=?, category=?, description=?, price=?, manufacturer=?, status=? WHERE medicine_id=?";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Medicine updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
 export const removeMedicine = async (req, res) => {
     const query = "DELETE FROM medicine WHERE medicine_id = ?";
     const category_id = req.params.id;
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [category_id]);
         res.status(200).json('Medicine removed');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 

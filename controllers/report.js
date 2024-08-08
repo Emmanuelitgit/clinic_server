@@ -24,23 +24,29 @@ export const getReports = async (req, res) => {
     `;
 
     const type = req.params.type;
-
+  let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [type]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
 export const getAllReports = async (req, res) => {
     const query = `SELECT * FROM report`;
-
+  let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -60,12 +66,15 @@ export const getReport = async (req, res) => {
             ON ${db_name}.report.doctor_id = ${db_name}.staff.staff_id
         WHERE ${db_name}.report.patient_id = ?
     `;
-
+  let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.id]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -78,12 +87,15 @@ export const addReport = async (req, res) => {
         req.body.report_type
     ];
     const query = "INSERT INTO report(`description`, `date`, `patient_id`, `doctor_id`, `report_type`) VALUES(?)";
-
+  let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [values]);
         res.status(201).json('Report added');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -97,24 +109,30 @@ export const updateReport = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE report SET description = ?, date = ?, patient_id = ?, doctor_id = ?, report_type = ? WHERE report_id = ?";
-
+  let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Report updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
 export const removeReport = async (req, res) => {
     const query = "DELETE FROM report WHERE report_id = ?";
     const reportId = req.params.id;
-
+  let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [reportId]);
         res.status(200).json('Report removed');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 

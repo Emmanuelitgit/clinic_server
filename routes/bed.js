@@ -23,10 +23,10 @@ router.delete("/remove_bed/:id", authenticateToken, removeBed);
 
 // BED ALLOTMENT ROUTE DEFINITION HERE
 
-router.get("/bed_allotments", getBedAllotmentList);
-router.get("/bed_allotment/:id", getBedAllotment);
-router.post("/add_bed_allotment", addBedAllotment);
-router.put("/update_bed_allotment/:id", updateBedAllotment);
-router.delete("/remove_bed_allotment/:id", removeBedAllotment);
+router.get("/bed_allotments", authenticateToken, getBedAllotmentList);
+router.get("/bed_allotment/:id", authenticateToken, getBedAllotment);
+router.post("/add_bed_allotment", authenticateToken, addBedAllotment);
+router.put("/update_bed_allotment/:id", authenticateToken, updateBedAllotment);
+router.delete("/remove_bed_allotment/:id", authenticateToken, removeBedAllotment);
 
 export default router;

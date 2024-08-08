@@ -1,5 +1,6 @@
 import db from "../db.js";
 import dotenv from "dotenv";
+import axios from "axios"
 dotenv.config();
 
 const db_name = process.env.DB_DBNAME
@@ -17,12 +18,15 @@ export const getInvoiceList = async (req, res) => {
         JOIN ${db_name}.patient 
             ON ${db_name}.patient.patient_id = ${db_name}.invoice.patient_id
     `;
-
+ let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -39,12 +43,15 @@ export const getInvoice = async (req, res) => {
             ON ${db_name}.patient.patient_id = ${db_name}.invoice.patient_id
         WHERE ${db_name}.patient.patient_id = ?
     `;
-
+ let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.id]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -60,12 +67,15 @@ export const addInvoice = async (req, res) => {
         req.body.description
     ];
     const query = "INSERT INTO invoice(`title`, `amount`, `patient_id`, `accountant_id`, `date`, `status`, `transaction_id`, `description`) VALUES(?)";
-
+ let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [values]);
         res.status(201).json('Invoice added');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -81,12 +91,15 @@ export const updateInvoice = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE invoice SET title=?, amount=?, patient_id=?, accountant_id=?, date=?, status=?, description=? WHERE invoice_id=?";
-
+ let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Invoice updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
@@ -94,26 +107,71 @@ export const updateStatus = async (req, res) => {
     const values = [req.body.status];
     const updateId = req.params.id;
     const query = "UPDATE invoice SET status=? WHERE invoice_id=?";
-
+ let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Status updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
 
 export const removeInvoice = async (req, res) => {
     const query = "DELETE FROM invoice WHERE invoice_id = ?";
     const invoiceId = req.params.id;
-
+ let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [invoiceId]);
         res.status(200).json('Invoice removed');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 }
+
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
+
+export const initializePayment = async(req, res)=>{
+    const { email, amount } = req.body;
+    try {
+        const response = await axios.post('https://api.paystack.co/transaction/initialize', {
+            email,
+            amount: amount * 100, 
+        }, {
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+                'Content-Type': 'application/json',
+            },
+        });
+
+        res.json(response.data);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error.message);
+    }
+}
+
+export const verifyPayment = async(req, res)=>{
+    const { reference } = req.params;
+    try {
+        const response = await axios.get(`https://api.paystack.co/transaction/verify/${reference}`, {
+            headers: {
+                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+                'Content-Type': 'application/json',
+            },
+        });
+        res.json(response.data);
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error.message);
+    }
+}
+
 
 
 // import db from "../db.js";

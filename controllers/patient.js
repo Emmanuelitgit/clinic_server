@@ -7,23 +7,29 @@ const db_name = process.env.DB_DBNAME
 
 export const patientList = async (req, res) => {
   const query = "SELECT * FROM patient";
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const getPatient = async (req, res) => {
   const query = "SELECT * FROM patient WHERE patient_id=?";
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query, [req.params.id]);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -40,12 +46,15 @@ export const addPatient = async (req, res) => {
     req.body.profile
   ];
   const query = "INSERT INTO patient(`name`, `email`, `phone`, `address`, `age`, `sex`, `birth_date`, `blood_group`, `profile`) VALUES(?)";
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [values]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -63,24 +72,31 @@ export const updatePatient = async (req, res) => {
   ];
   const updateId = req.params.id;
   const query = "UPDATE patient SET name=?, email=?, phone=?, address=?, age=?, sex=?, birth_date=?, blood_group=?, profile=? WHERE patient_id=?";
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [...values, updateId]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const removePatient = async (req, res) => {
   const query = "DELETE FROM patient WHERE patient_id = ?";
   const patientId = req.params.id;
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [patientId]);
     return res.status(200).json(result);
   } catch (err) {
+    console.log(err)
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -100,12 +116,15 @@ export const getVitalList = async (req, res) => {
     JOIN ${db_name}.staff
         ON ${db_name}.vital.nurse_id = ${db_name}.staff.staff_id;
   `;
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -123,12 +142,15 @@ export const getVital = async (req, res) => {
         ON ${db_name}.vital.nurse_id = ${db_name}.staff.staff_id
     WHERE ${db_name}.vital.patient_id=?
   `;
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query, [req.params.id]);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -144,12 +166,15 @@ export const addVital = async (req, res) => {
     req.body.comment
   ];
   const query = "INSERT INTO vital(`patient_id`, `nurse_id`, `date`, `bp_level`, `temperature`, `height`, `age`, `comment`) VALUES(?)";
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [values]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -166,24 +191,30 @@ export const updateVital = async (req, res) => {
   ];
   const updateId = req.params.id;
   const query = "UPDATE vital SET patient_id=?, nurse_id=?, date=?, bp_level=?, temperature=?, height=?, age=?, comment=? WHERE vital_id=?";
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [...values, updateId]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const removeVital = async (req, res) => {
   const query = "DELETE FROM vital WHERE vital_id = ?";
   const vitalId = req.params.id;
-
+ let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [vitalId]);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 

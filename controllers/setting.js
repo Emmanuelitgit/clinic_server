@@ -2,12 +2,15 @@ import db from "../db.js";
 
 export const getSettingList = async (req, res) => {
     const query = `SELECT * FROM settings`;
-
+    let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -22,12 +25,15 @@ export const updateSetting = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE settings SET system_name = ?, system_email = ?, address = ?, currency = ?, phone = ?, language = ? WHERE setting_id = ?";
-
+    let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Setting updated');
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 

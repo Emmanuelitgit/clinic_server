@@ -30,12 +30,15 @@ export const getRequests = async (req, res) => {
         LEFT JOIN ${db_name}.lab_report
             ON ${db_name}.lab_request.patient_id = ${db_name}.lab_report.patient_id
         WHERE ${db_name}.lab_request.request_type = ?`;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.request_type]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -63,12 +66,15 @@ export const getAllRequestsForDoctors = async (req, res) => {
             ON ${db_name}.lab_request.patient_id = ${db_name}.invoice.patient_id
         LEFT JOIN ${db_name}.lab_report
             ON ${db_name}.lab_request.patient_id = ${db_name}.lab_report.patient_id`;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -93,12 +99,15 @@ export const getRequest = async (req, res) => {
         LEFT JOIN ${db_name}.invoice
             ON ${db_name}.lab_request.patient_id = ${db_name}.invoice.patient_id
         WHERE ${db_name}.lab_request.patient_id = ?`;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.id]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -112,12 +121,15 @@ export const addRequest = async (req, res) => {
         req.body.date,
     ];
     const query = "INSERT INTO lab_request(`patient_id`, `doctor_id`, `request_type`, `test_name`, `method`, `date`) VALUES(?)";
-
+      let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [values]);
         res.status(201).json('Report added');
     } catch (err) {
         res.send(err);
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -132,12 +144,15 @@ export const updateRequest = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE lab_request SET patient_id = ?, doctor_id = ?, request_type = ?, test_name = ?, method = ?, date = ? WHERE request_id = ?";
-
+      let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Report updated');
     } catch (err) {
         res.send(err);
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -145,24 +160,30 @@ export const updateStatus = async (req, res) => {
     const values = [req.body.status];
     const updateId = req.params.id;
     const query = "UPDATE lab_request SET status = ? WHERE request_id = ?";
-
+      let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Status updated');
     } catch (err) {
         res.send(err);
+    }finally{
+        if(connection) connection.release()
     }
 };
 
 export const removeRequest = async (req, res) => {
     const query = "DELETE FROM lab_request WHERE request_id = ?";
     const requestId = req.params.id;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [requestId]);
         res.status(200).json('Request removed');
     } catch (err) {
         res.send(err);
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -186,12 +207,15 @@ export const getLabResultList = async (req, res) => {
         JOIN ${db_name}.lab_request
             ON ${db_name}.lab_request.patient_id = ${db_name}.lab_report.patient_id
         WHERE ${db_name}.lab_request.request_type = ?`;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.request_type]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -213,12 +237,15 @@ export const getLabResultListForDoctors = async (req, res) => {
             ON ${db_name}.lab_report.laboratorist_id = ${db_name}.staff.staff_id
         JOIN ${db_name}.lab_request
             ON ${db_name}.lab_request.patient_id = ${db_name}.lab_report.patient_id`;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -240,12 +267,15 @@ export const getLabResult = async (req, res) => {
         JOIN ${db_name}.lab_request
             ON ${db_name}.lab_request.patient_id = ${db_name}.lab_report.patient_id
         WHERE ${db_name}.lab_report.patient_id = ?`;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         const [data] = await db.query(query, [req.params.id]);
         res.status(200).json(data);
     } catch (err) {
         res.status(500).json("Internal server error");
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -257,12 +287,15 @@ export const addLabResult = async (req, res) => {
         req.body.test_report,
     ];
     const query = "INSERT INTO lab_report(`patient_id`, `laboratorist_id`, `date`, `test_report`) VALUES(?)";
-
+      let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [values]);
         res.status(201).json('Report added');
     } catch (err) {
         res.send(err);
+    }finally{
+        if(connection) connection.release()
     }
 };
 
@@ -275,24 +308,30 @@ export const updateLabResult = async (req, res) => {
     ];
     const updateId = req.params.id;
     const query = "UPDATE lab_report SET patient_id = ?, laboratorist_id = ?, date = ?, test_report = ? WHERE lab_report_id = ?";
-
+      let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [...values, updateId]);
         res.status(201).json('Report updated');
     } catch (err) {
         res.send(err);
+    }finally{
+        if(connection) connection.release()
     }
 };
 
 export const removeLabResult = async (req, res) => {
     const query = "DELETE FROM lab_report WHERE lab_report_id = ?";
     const reportId = req.params.id;
-
+      let connection;
     try {
+        connection = await db.getConnection();
         await db.query(query, [reportId]);
         res.status(200).json('Report removed');
     } catch (err) {
         res.send(err);
+    }finally{
+        if(connection) connection.release()
     }
 };
 

@@ -2,7 +2,7 @@ import db from "../db.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const db_name = process.env.DB_DBNAME
+const db_name = process.env.DB_DBNAME;
 
 export const getAppointmentList = async (req, res) => {
   const query = `
@@ -17,11 +17,15 @@ export const getAppointmentList = async (req, res) => {
     JOIN ${db_name}.patient 
       ON ${db_name}.patient.patient_id = ${db_name}.appointment.patient_id;`;
 
+  let connection;
   try {
-    const [rows] = await db.query(query);
+    connection = await db.getConnection();
+    const [rows] = await connection.query(query);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  } finally {
+    if (connection) connection.release();
   }
 };
 
@@ -38,11 +42,15 @@ export const getAppointment = async (req, res) => {
       ON ${db_name}.patient.patient_id = ${db_name}.appointment.patient_id
     WHERE ${db_name}.patient.patient_id=?`;
 
+  let connection;
   try {
-    const [rows] = await db.query(query, [req.params.id]);
+    connection = await db.getConnection();
+    const [rows] = await connection.query(query, [req.params.id]);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  } finally {
+    if (connection) connection.release();
   }
 };
 
@@ -56,11 +64,15 @@ export const addAppointment = async (req, res) => {
   ];
   const query = "INSERT INTO appointment(`date`, `doctor_id`, `patient_id`, `title`, `description`) VALUES(?)";
 
+  let connection;
   try {
-    const [result] = await db.query(query, [values]);
+    connection = await db.getConnection();
+    const [result] = await connection.query(query, [values]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  } finally {
+    if (connection) connection.release();
   }
 };
 
@@ -75,11 +87,15 @@ export const updateAppointment = async (req, res) => {
   const updateId = req.params.id;
   const query = "UPDATE appointment SET date = ?, doctor_id = ?, patient_id =?, title =?, description=? WHERE appointment_id=?";
 
+  let connection;
   try {
-    const [result] = await db.query(query, [...values, updateId]);
+    connection = await db.getConnection();
+    const [result] = await connection.query(query, [...values, updateId]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  } finally {
+    if (connection) connection.release();
   }
 };
 
@@ -87,11 +103,15 @@ export const removeAppointment = async (req, res) => {
   const query = "DELETE FROM appointment WHERE appointment_id = ?";
   const appointmentId = req.params.id;
 
+  let connection;
   try {
-    const [result] = await db.query(query, [appointmentId]);
+    connection = await db.getConnection();
+    const [result] = await connection.query(query, [appointmentId]);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  } finally {
+    if (connection) connection.release();
   }
 };
 

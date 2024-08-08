@@ -2,23 +2,29 @@ import db from "../db.js";
 
 export const getBloodBankList = async (req, res) => {
   const query = "SELECT * FROM blood_bank";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const getBloodBank = async (req, res) => {
   const query = "SELECT * FROM blood_bank WHERE blood_bank_id=?";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query, [req.params.id]);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -28,12 +34,15 @@ export const addBloodBank = async (req, res) => {
     req.body.status
   ];
   const query = "INSERT INTO blood_bank(`blood_group`, `status`) VALUES(?)";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [values]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -44,24 +53,30 @@ export const updateBloodBank = async (req, res) => {
   ];
   const updateId = req.params.id;
   const query = "UPDATE blood_bank SET blood_group=?, status=? WHERE blood_bank_id=?";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [...values, updateId]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const removeBloodBank = async (req, res) => {
   const query = "DELETE FROM blood_bank WHERE blood_bank_id = ?";
   const blood_bankId = req.params.id;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [blood_bankId]);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -69,23 +84,29 @@ export const removeBloodBank = async (req, res) => {
 
 export const getBloodDonorList = async (req, res) => {
   const query = "SELECT * FROM blood_donor";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const getBloodDonor = async (req, res) => {
   const query = "SELECT * FROM blood_donor WHERE blood_donor_id=?";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query, [req.params.id]);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -101,12 +122,15 @@ export const addBloodDonor = async (req, res) => {
     req.body.last_donation_date
   ];
   const query = "INSERT INTO blood_donor(`name`, `email`, `address`, `phone`, `sex`, `age`, `blood_group`, `last_donation_date`) VALUES(?)";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [values]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -123,24 +147,30 @@ export const updateBloodDonor = async (req, res) => {
   ];
   const updateId = req.params.id;
   const query = "UPDATE blood_donor SET name=?, email=?, address=?, phone=?, sex=?, age=?, blood_group=?, last_donation_date=? WHERE blood_donor_id=?";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [...values, updateId]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const removeBloodDonor = async (req, res) => {
   const query = "DELETE FROM blood_donor WHERE blood_donor_id = ?";
   const blood_donorId = req.params.id;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [blood_donorId]);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 

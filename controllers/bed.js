@@ -6,23 +6,29 @@ const db_name = process.env.DB_DBNAME
 
 export const getBedList = async (req, res) => {
   const query = `SELECT * FROM bed`;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const getBed = async (req, res) => {
   const query = `SELECT * FROM bed WHERE bed_id=?`;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query, [req.params.id]);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -35,12 +41,15 @@ export const addBed = async (req, res) => {
     req.body.description,
   ];
   const query = "INSERT INTO bed(`bed_type`, `bed_number`, `bed_status`, `bed_location`, `description`) VALUES(?)";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [values]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -54,24 +63,30 @@ export const updateBed = async (req, res) => {
   ];
   const updateId = req.params.id;
   const query = "UPDATE bed SET bed_type= ?, bed_number = ?, bed_status =?, bed_location=?, description=? WHERE bed_id=?";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [...values, updateId]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const removeBed = async (req, res) => {
   const query = "DELETE FROM bed WHERE bed_id = ?";
   const bedId = req.params.id;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [bedId]);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -87,12 +102,15 @@ export const getBedAllotmentList = async (req, res) => {
       ON ${db_name}.bed_allotment.patient_id=${db_name}.patient.patient_id
     JOIN ${db_name}.bed 
       ON ${db_name}.bed_allotment.bed_id=${db_name}.bed.bed_id`;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -106,12 +124,15 @@ export const getBedAllotment = async (req, res) => {
     JOIN ${db_name}.bed 
       ON ${db_name}.bed_allotment.bed_id=${db_name}.bed.bed_id
     WHERE ${db_name}.bed_allotment.patient_id=?`;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [rows] = await db.query(query, [req.params.id]);
     return res.status(200).json(rows);
   } catch (err) {
     return res.status(500).json("Internal server error");
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -124,12 +145,15 @@ export const addBedAllotment = async (req, res) => {
     req.body.description
   ];
   const query = "INSERT INTO bed_allotment(`patient_id`, `bed_id`, `allotment_date`, `discharge_date`, `description`) VALUES(?)";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [values]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
@@ -143,24 +167,30 @@ export const updateBedAllotment = async (req, res) => {
   ];
   const updateId = req.params.id;
   const query = "UPDATE bed_allotment SET patient_id= ?, bed_id = ?, allotment_date =?, discharge_date=?, description=? WHERE allotment_id=?";
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [...values, updateId]);
     return res.status(201).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 
 export const removeBedAllotment = async (req, res) => {
   const query = "DELETE FROM bed_allotment WHERE allotment_id = ?";
   const allotmentId = req.params.id;
-
+  let connection;
   try {
+    connection = await db.getConnection();
     const [result] = await db.query(query, [allotmentId]);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json(err);
+  }finally{
+    if(connection) connection.release()
   }
 };
 

@@ -13,7 +13,7 @@ export const renewToken = async (req, res, next) => {
             return res.status(401).json("Invalid refresh token");
         }
 
-        const newToken = jwt.sign({ id: decoded.id, email: decoded.email }, "jwt_key", { expiresIn: '20s' });
+        const newToken = jwt.sign({ id: decoded.id, email: decoded.email }, "jwt_key", { expiresIn: '5m' });
         res.cookie('token', newToken, { maxAge: 30000, httpOnly: true });
         req.email = decoded.email;
         req.id = decoded.id;
