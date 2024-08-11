@@ -140,8 +140,8 @@ export const login = async (req, res) => {
     const cookieOptions = {
       httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000, // 1 week in milliseconds
-      sameSite: 'Strict', // adjust as necessary
-      secure: process.env.NODE_ENV === 'production' // true in production
+      secure: true,
+      sameSite: 'None'
   };  
 
     res.cookie('token', token, { maxAge: 30000, httpOnly: true });
