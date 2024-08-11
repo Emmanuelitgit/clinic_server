@@ -28,7 +28,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: 'https://zangu-community-clinic.netlify.app',
-        methods: ["GET", "POST"]
+        methods: ["GET", "POST"],
+        optionsSuccessStatus: 200
     }
 });
 

@@ -10,10 +10,13 @@ const app = express();
 
 // Middleware
 app.use(cookieParser());
-app.use(cors({
+const corsOptions = {
     origin: 'https://zangu-community-clinic.netlify.app',
-    credentials: true,
-}));
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', 
+    credentials: true, 
+  };
+  
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
