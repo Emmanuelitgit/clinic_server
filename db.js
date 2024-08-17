@@ -9,8 +9,9 @@ const db = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DBNAME,
   waitForConnections: true,
-  connectionLimit: 50,
-  queueLimit: 0,
+  port:process.env.PORT,
+  connectionLimit: 40,
+  queueLimit: 20,
   enableKeepAlive: true,
   keepAliveInitialDelay: 0,
 });
