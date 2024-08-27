@@ -19,16 +19,26 @@ import settingRoute from './routes/setting.js';
 import app from './middleware/middleware.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-
+import messageRoute from "./routes/messages.js"
 
 dotenv.config();
 
 const server = http.createServer(app);
 
-const io = new Server(server, {
+// const io = new Server(server, {
+//     cors: {
+//         origin: 'https://zangu-community-clinic.netlify.app',
+//         origin: 'http://localhost:3000',
+//         methods: ["GET", "POST"],
+//         optionsSuccessStatus: 200
+//     }
+// });
+
+const SOCKET_PORT = process.env.SOCKET_PORT || 8800;
+const io = new Server(SOCKET_PORT, {
     cors: {
         origin: 'https://zangu-community-clinic.netlify.app',
-        methods: ["GET", "POST"],
+        methods: ["GET", "POST", "PUT"],
         optionsSuccessStatus: 200
     }
 });
@@ -49,54 +59,46 @@ app.post("/upload", upload.single('file'), function (req, res) {
     res.status(200).json(file?.filename);
 });
 
-io.on('connection', (socket) => {
-    console.log('A user connected', socket.id);
 
-    socket.on('joinRoom', (userId) => {
-        socket.join(userId);
-        console.log(`${userId} joined the room`);
-    });
+let activeUsers = [];
 
-    socket.on('sendMessage', ({receiver,sender,message}) => {
+io.on("connection", (socket) => {
 
-        io.emit("receiveMessage", {sender,message})
+  socket.on("new-user-add", (newUserId) => {
+    if (!activeUsers.some((user) => user.userId === newUserId)) {
+      activeUsers.push({ userId: newUserId, socketId: socket.id });
+      console.log("New User Connected", activeUsers);
+    }
+    io.emit("get-users", activeUsers);
+  });
 
-        // io.to(receiver).emit('receiveMessage', { sender, message })
-        // console.log(`Message inserted successfully. Emitting to receiver ${receiver} ${message}`);
 
-        // const query = 'INSERT INTO messages (sender, receiver, message) VALUES (?, ?, ?)';
-        // db.query(query, [sender, receiver, message], (err, result) => {
-        //     if (err) {
-        //         console.error('Error inserting message into database', err);
-        //         return;
-        //     }
-        //     console.log(`Message inserted successfully. Emitting to receiver ${receiver}`);
-        //     io.to(receiver).emit('receiveMessage', { sender, message });
-        // });
-    });
+  // send message to a specific user
+  socket.on("send-message", (data) => {
+    const { receiver, senderId, message } = data;
+    
+    console.log("Trying to send message to:", receiver);
+    const user = activeUsers?.find((user) => user.userId === receiver);
+    
+    console.log("Active Users:", activeUsers);
+    if (user) {
+      console.log("Sending from socket to:", receiver);
+      io.to(user.socketId).emit("recieve-message", data);
+    } else {
+      console.log(`User with ID ${receiver} not found`);
+    }
+  });
 
-    socket.on('disconnect', () => {
-        console.log('User disconnected', socket.id);
-    });
+  socket.on("disconnect", () => {
+    // remove user from active users
+    activeUsers = activeUsers.filter((user) => user.socketId !== socket.id);
+    console.log("User Disconnected", activeUsers);
+    // send all active users to all users
+    io.emit("get-users", activeUsers);
+  });
 });
 
 
-app.post('/messages', (req, res) => {
-    const { sender, receiver } = req.body;
-    const query = 'SELECT * FROM messages WHERE (sender = ? AND receiver = ?) OR (sender = ? AND receiver = ?)';
-   try {
-    db.query(query, [sender, receiver, receiver, sender], (err, results) => {
-        if (err) {
-            console.error('Error fetching messages from database', err);
-            res.status(500).send('Server error');
-            return;
-        }
-        res.json(results);
-    });
-   } catch (error) {
-    console.log(error)
-   }
-});
 
 app.use("/", authRoute);
 app.use("/", staffRoute);
@@ -109,6 +111,7 @@ app.use("/", medicationRoute);
 app.use("/", requestRoute);
 app.use("/", invoiceRoute);
 app.use("/", settingRoute);
+app.use("/", messageRoute)
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {

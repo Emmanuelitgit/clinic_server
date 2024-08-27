@@ -12,6 +12,7 @@ const app = express();
 app.use(cookieParser());
 const corsOptions = {
     origin: 'https://zangu-community-clinic.netlify.app',
+    // origin: 'http://localhost:3000',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', 
     credentials: true, 
   };
