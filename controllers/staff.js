@@ -62,8 +62,9 @@ export const addStaff = async (req, res) => {
 
   try {
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
+    const salt = 10;
+    const hashedPassword = bcrypt.hashSync(password, salt);
+    
     const values = [
       name,
       role,
