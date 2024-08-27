@@ -1,6 +1,8 @@
 import db from "../db.js";
 import jwt from "jsonwebtoken";
 import upload from "../middleware/multer.js";
+import bcrypt from 'bcrypt';
+
 
 // STAFF HERE
 export const getStaffList = async (req, res) => {
@@ -45,29 +47,51 @@ export const getAllStaff = async (req, res) => {
   }
 };
 
+
 export const addStaff = async (req, res) => {
-  const values = [
-    req.body.name,
-    req.body.role,
-    req.body.phone,
-    req.body.address,
-    req.body.email,
-    req.body.password,
-    req.body.department,
-    req.body.profile
-  ];
-  const query = "INSERT INTO staff(`name`, `role`, `phone`, `address`, `email`, `password`, `department`, `profile`) VALUES(?)";
-  let connection;
+  const {
+    name,
+    role,
+    phone,
+    address,
+    email,
+    password,
+    department,
+    profile
+  } = req.body;
+
   try {
-    connection = await db.getConnection();
-    const [result] = await db.query(query, [values]);
-    return res.status(201).json(result);
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const values = [
+      name,
+      role,
+      phone,
+      address,
+      email,
+      hashedPassword, 
+      department,
+      profile
+    ];
+
+    const query = "INSERT INTO staff(name, role, phone, address, email, password, department, profile) VALUES(?)";
+
+    let connection;
+    try {
+      connection = await db.getConnection();
+      const [result] = await db.query(query, [values]);
+      return res.status(201).json(result);
+    } catch (err) {
+      return res.status(500).json(err);
+    } finally {
+      if (connection) connection.release();
+    }
   } catch (err) {
-    return res.status(500).json(err);
-  }finally{
-    if(connection) connection.release()
+    return res.status(500).json({ message: "Error hashing password", error: err });
   }
 };
+
 
 export const updateStaff = async (req, res) => {
   const values = [
