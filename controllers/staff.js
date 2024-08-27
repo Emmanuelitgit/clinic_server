@@ -1,7 +1,7 @@
 import db from "../db.js";
 import jwt from "jsonwebtoken";
 import upload from "../middleware/multer.js";
-import bcrypt from 'bcrypt';
+import bcrypt from "bcryptjs";
 
 
 // STAFF HERE
