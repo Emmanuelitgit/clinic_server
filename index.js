@@ -25,23 +25,14 @@ dotenv.config();
 
 const server = http.createServer(app);
 
-// const io = new Server(server, {
-//     cors: {
-//         origin: 'https://zangu-community-clinic.netlify.app',
-//         origin: 'http://localhost:3000',
-//         methods: ["GET", "POST"],
-//         optionsSuccessStatus: 200
-//     }
-// });
-
-// const SOCKET_PORT = process.env.SOCKET_PORT || 8800;
-const io = new Server(8800, {
-    cors: {
-        origin: 'https://zangu-community-clinic.netlify.app',
-        methods: ["GET", "POST", "PUT"],
-        optionsSuccessStatus: 200
-    }
+const io = new Server(server, {
+  cors: {
+      origin: 'https://zangu-community-clinic.netlify.app',
+      methods: ["GET", "POST", "PUT"],
+      optionsSuccessStatus: 200
+  }
 });
+
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
