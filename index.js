@@ -34,8 +34,8 @@ const server = http.createServer(app);
 //     }
 // });
 
-const SOCKET_PORT = process.env.SOCKET_PORT || 8800;
-const io = new Server(SOCKET_PORT, {
+// const SOCKET_PORT = process.env.SOCKET_PORT || 8800;
+const io = new Server(server, {
     cors: {
         origin: 'https://zangu-community-clinic.netlify.app',
         methods: ["GET", "POST", "PUT"],
