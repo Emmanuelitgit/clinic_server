@@ -113,7 +113,7 @@ app.use("/", invoiceRoute);
 app.use("/", settingRoute);
 app.use("/", messageRoute)
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 26651;
 server.listen(PORT, () => {
     console.log(`App is running on port ${PORT}`);
 });
