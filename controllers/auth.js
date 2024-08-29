@@ -107,7 +107,7 @@ export const verifyOtp = async (req, res) => {
 };
 
 const generateToken = (id, key, email) => {
-  return jwt.sign({ id, email }, key, { expiresIn: '5m' });
+  return jwt.sign({ id, email }, key, { expiresIn: '10m' });
 };
 
 const generateRefreshToken = (id, key, email) => {
