@@ -20,6 +20,7 @@ import app from './middleware/middleware.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import messageRoute from "./routes/messages.js"
+import invoicePDFRoute from "./routes/invoicePDF.js"
 
 dotenv.config();
 
@@ -103,6 +104,8 @@ app.use("/", requestRoute);
 app.use("/", invoiceRoute);
 app.use("/", settingRoute);
 app.use("/", messageRoute)
+app.use("/", invoicePDFRoute)
+
 
 const PORT = process.env.PORT || 26651;
 server.listen(PORT, () => {
