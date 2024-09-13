@@ -1,5 +1,5 @@
 import pdf from 'html-pdf';
-import invoiceTemplate from '../Documents/invoice';
+import {invoiceTemplate} from '../Documents/invoice';
 import dotenv from "dotenv";
 dotenv.config();
 
