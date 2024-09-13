@@ -128,6 +128,5 @@ export const invoiceTemplate = ({ title, amount, patient_name, date, status, inv
                <h1 class="justify-center">Total price: ${amount}$</h1>
             </div>
          </body>
-      </html>
-      `;
+      </html>`
   };
