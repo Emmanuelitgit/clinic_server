@@ -1,4 +1,4 @@
-const invoiceTemplate = ({ title, amount, patient_name, date, status, invoice_id }) => {
+export const invoiceTemplate = ({ title, amount, patient_name, date, status, invoice_id }) => {
     const today = new Date();
     return `
       <!doctype html>
@@ -131,5 +131,3 @@ const invoiceTemplate = ({ title, amount, patient_name, date, status, invoice_id
       </html>
       `;
   };
-  
-  export default invoiceTemplate;  
