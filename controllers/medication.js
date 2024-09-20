@@ -71,10 +71,15 @@ export const getPrescriptionsCountForDashBox = async (req, res) => {
 export const getPrescription = async (req, res) => {
     const query = `
         SELECT ${db_name}.patient.name AS patient_name,
+               ${db_name}.patient.age AS patient_age,
+               ${db_name}.patient.phone AS patient_phone,
+               ${db_name}.patient.sex AS patient_sex,
                ${db_name}.staff.name AS doctor_name,
                ${db_name}.prescription.prescription_id,
                ${db_name}.prescription.medication,
                ${db_name}.prescription.date,
+               ${db_name}.prescription.dosage,
+               ${db_name}.prescription.duration,
                ${db_name}.invoice.status AS payment_status,
                ${db_name}.prescription.description,
                ${db_name}.prescription.status AS med_status
@@ -104,10 +109,12 @@ export const addPrescription = async (req, res) => {
         req.body.patient_id,
         req.body.doctor_id,
         req.body.medication,
+        req.body.dosage,
+        req.body.duration,
         req.body.description,
         req.body.date
     ];
-    const query = "INSERT INTO prescription(`patient_id`, `doctor_id`, `medication`, `description`, `date`) VALUES(?)";
+    const query = "INSERT INTO prescription(`patient_id`, `doctor_id`, `medication`, `dosage`, `duration`, `description`, `date`) VALUES(?)";
     let connection;
     try {
         connection = await db.getConnection();
@@ -125,11 +132,13 @@ export const updatePrescription = async (req, res) => {
         req.body.patient_id,
         req.body.doctor_id,
         req.body.medication,
+        req.body.dosage,
+        req.body.duration,
         req.body.description,
         req.body.date
     ];
     const updateId = req.params.id;
-    const query = "UPDATE prescription SET patient_id=?, doctor_id=?, medication=?, description=?, date=?  WHERE prescription_id=?";
+    const query = "UPDATE prescription SET patient_id=?, doctor_id=?, medication=?, dosage=?, duration=?, description=?, date=?  WHERE prescription_id=?";
     let connection;
     try {
         connection = await db.getConnection();

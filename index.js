@@ -21,6 +21,8 @@ import cors from 'cors';
 import bodyParser from 'body-parser';
 import messageRoute from "./routes/messages.js"
 import invoicePDFRoute from "./routes/invoicePDF.js"
+import prescriptionPDFRoute from "./routes/prescriptionPDF.js"
+import labRoute from "./routes/labReportPDF.js"
 
 dotenv.config();
 
@@ -105,6 +107,8 @@ app.use("/", invoiceRoute);
 app.use("/", settingRoute);
 app.use("/", messageRoute)
 app.use("/", invoicePDFRoute)
+app.use("/", prescriptionPDFRoute)
+app.use("/", labRoute)
 
 
 const PORT = process.env.PORT || 26651;

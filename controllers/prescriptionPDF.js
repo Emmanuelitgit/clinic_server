@@ -1,5 +1,5 @@
 import pdf from 'html-pdf';
-import { invoiceTemplate } from '../Documents/invoice.js';
+import { prescriptionTemplate } from '../Documents/prescription.js';
 import dotenv from "dotenv";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -10,9 +10,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 
-export const createInvoicePDF = async (req, res) => {
-    const filePath = `${__dirname}/invoice.pdf`; 
-    pdf.create(invoiceTemplate(req.body), {}).toFile(filePath, (err) => {
+export const createPrescriptionPDF = async (req, res) => {
+    const filePath = `${__dirname}/prescription.pdf`; 
+    pdf.create(prescriptionTemplate(req.body), {}).toFile(filePath, (err) => {
         if (err) {
             console.log("PDF creation failed:", err);
             return res.status(500).json({ success: false, message: "PDF creation failed" });
@@ -24,6 +24,6 @@ export const createInvoicePDF = async (req, res) => {
 };
 
 
-export const getInvoicePDF = async (req, res) => {
-    res.sendFile(`${__dirname}/invoice.pdf`);
+export const getPrescriptionPDF = async (req, res) => {
+    res.sendFile(`${__dirname}/prescription.pdf`);
 };

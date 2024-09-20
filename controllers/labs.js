@@ -194,6 +194,7 @@ export const getLabResultList = async (req, res) => {
             ${db_name}.patient.name AS patient_name,
             ${db_name}.lab_report.lab_report_id,
             ${db_name}.lab_report.date,
+            ${db_name}.lab_report.laboratorist_id,
             ${db_name}.staff.name AS laboratorist_name,
             ${db_name}.lab_request.test_name,
             ${db_name}.lab_request.request_type,
@@ -224,6 +225,7 @@ export const getLabResultListForDoctors = async (req, res) => {
         SELECT  
             ${db_name}.patient.name AS patient_name,
             ${db_name}.lab_report.lab_report_id,
+            ${db_name}.lab_report.laboratorist_id,
             ${db_name}.lab_report.date,
             ${db_name}.staff.name AS laboratorist_name,
             ${db_name}.lab_request.test_name,
@@ -253,7 +255,11 @@ export const getLabResult = async (req, res) => {
     const query = `
         SELECT  
             ${db_name}.patient.name AS patient_name,
+            ${db_name}.patient.age AS patient_age,
+            ${db_name}.patient.sex AS patient_sex,
+            ${db_name}.patient.phone AS patient_phone,
             ${db_name}.lab_report.lab_report_id,
+            ${db_name}.lab_report.lab_report_id AS report_id,
             ${db_name}.lab_report.date,
             ${db_name}.staff.name AS laboratorist_name,
             ${db_name}.lab_request.test_name,
@@ -294,6 +300,7 @@ export const addLabResult = async (req, res) => {
         res.status(201).json('Report added');
     } catch (err) {
         res.send(err);
+        console.log(err)
     }finally{
         if(connection) connection.release()
     }
@@ -315,6 +322,7 @@ export const updateLabResult = async (req, res) => {
         res.status(201).json('Report updated');
     } catch (err) {
         res.send(err);
+        console.log(err)
     }finally{
         if(connection) connection.release()
     }
