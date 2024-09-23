@@ -118,8 +118,6 @@ export const login = async (req, res) => {
   const query = "SELECT * FROM staff WHERE email = ? AND role = ?";
   const { email, role, password } = req.body;
 
-  console.log(email, role, password)
-
   let connection;
   try {
     connection = await db.getConnection();
