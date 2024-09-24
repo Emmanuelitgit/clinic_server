@@ -59,6 +59,7 @@ export const addInvoice = async (req, res) => {
     const values = [
         req.body.title,
         req.body.amount,
+        req.body.method,
         req.body.patient_id,
         req.body.accountant_id,
         req.body.date,
@@ -69,23 +70,28 @@ export const addInvoice = async (req, res) => {
      
     const {email, amount} = req.body;
 
-    const query = "INSERT INTO invoice(`title`, `amount`, `patient_id`, `accountant_id`, `date`, `status`, `transaction_id`, `description`) VALUES(?)";
+    const query = "INSERT INTO invoice(`title`, `amount`, `method`, `patient_id`, `accountant_id`, `date`, `status`, `transaction_id`, `description`) VALUES(?)";
      let connection;
     try {
         connection = await db.getConnection();
-        const response = await axios.post('https://api.paystack.co/transaction/initialize', {
-            email,
-            amount: amount * 100, 
-        }, {
-            headers: {
-                Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        if(response.status === 200){
-            await db.query(query, [values]);
-            res.status(201).json(response.data);
+        if(req.body.method === "MOMO"){
+            const response = await axios.post('https://api.paystack.co/transaction/initialize', {
+                email,
+                amount: amount * 100, 
+            }, {
+                headers: {
+                    Authorization: `Bearer ${PAYSTACK_SECRET_KEY}`,
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            if(response.status === 200){
+                await db.query(query, [values]);
+                res.status(201).json(response.data);
+            }
+        }else{
+            const [result] = await db.query(query, [values]);
+            return res.status(201).json(result);
         }
 
     } catch (err) {
@@ -100,6 +106,7 @@ export const updateInvoice = async (req, res) => {
     const values = [
         req.body.title,
         req.body.amount,
+        req.body.method,
         req.body.patient_id,
         req.body.accountant_id,
         req.body.date,
@@ -107,7 +114,7 @@ export const updateInvoice = async (req, res) => {
         req.body.description
     ];
     const updateId = req.params.id;
-    const query = "UPDATE invoice SET title=?, amount=?, patient_id=?, accountant_id=?, date=?, status=?, description=? WHERE invoice_id=?";
+    const query = "UPDATE invoice SET title=?, amount=?, method=?, patient_id=?, accountant_id=?, date=?, status=?, description=? WHERE invoice_id=?";
  let connection;
     try {
         connection = await db.getConnection();
